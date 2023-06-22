@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+const faker = require('faker');
+
 
 describe('Testes da Funcionalidade Usuários', () => {
 
@@ -68,31 +70,28 @@ describe('Testes da Funcionalidade Usuários', () => {
           });
      });
 
-     it('Deve editar um usuário previamente cadastrado', () => {
+     it.only ('Deve editar um usuário previamente cadastrado', () => {
           cy.request('GET', '/usuarios').then((response) => {
-               expect(response.status).to.eq(200);
-               expect(response.body).to.have.property('usuarios').that.is.an('array').and.to.have.length.greaterThan(0);
-
-               const usuarios = response.body.usuarios;
-               const usuarioId = usuarios[Math.floor(Math.random() * usuarios.length)]._id;
-               const dadosAtualizados = {
-                    "nome": "Fulano da Silva",
-                    "email": "beltrano2@qa.com.br",
-                    "password": "teste",
-                    "administrador": "true"
-               };
-
-               cy.request('PUT', `/usuarios/${'8rdWoA4Bk306Yh2v'}`, dadosAtualizados)
-                    .then((response) => {
-                         expect(response.status).to.eq(200);
-                         expect(response.body).to.have.property('message', 'Registro alterado com sucesso');
-                    });
-
-
-
-
+              expect(response.status).to.eq(200);
+              expect(response.body).to.have.property('usuarios').that.is.an('array').and.to.have.length.greaterThan(0);
+      
+              const usuarios = response.body.usuarios;
+              const usuarioId = usuarios[Math.floor(Math.random() * usuarios.length)]._id;
+              const dadosAtualizados = {
+                  "nome": "Fulano da Silva",
+                  "email": faker.internet.email(), 
+                  "password": "teste",
+                  "administrador": "true"
+              };
+      
+              cy.request('PUT', `/usuarios/${usuarioId}`, dadosAtualizados) 
+                  .then((response) => {
+                      expect(response.status).to.eq(200);
+                      expect(response.body).to.have.property('message', 'Registro alterado com sucesso');
+                  });
           });
-     });
+      });
+      
 
      it('Deve cadastrar e deletar um usuário', () => {
           const usuario = {
